@@ -5,6 +5,8 @@ import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.util.Scanner;
 
+import thread.recieve;
+
 public class client {
 
     public static void main(String[] args) throws Exception {
@@ -14,6 +16,20 @@ public class client {
 
         System.out.print("Enter your name: ");
         String name = sc.nextLine();
+
+        // start the thread that receives messages in real time
+        recieve r = new recieve(socket);
+        r.start();
+
+        // join message: lets the server register this client's address
+        byte[] join = (name + " joined the chat").getBytes();
+
+        socket.send(new DatagramPacket(
+                join,
+                join.length,
+                InetAddress.getByName("localhost"),
+                1234
+        ));
 
         while (true) {
 
